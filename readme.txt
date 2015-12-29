@@ -1,4 +1,6 @@
-###
+### 配置管理
+ - warper::get_cfg("cache");//"redis://cache.wefit.com"
+ - 获取配置，如果配置不存在，自动生成
 
 ### socketlog 用法
 https://github.com/luofei614/SocketLog
