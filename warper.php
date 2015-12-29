@@ -44,6 +44,8 @@ class warper{
 		}
 		self::$cfg[$cfg_key] = $default_val;
 
+		//todo:save config
+
 		return $default_val;
 	}
 }
