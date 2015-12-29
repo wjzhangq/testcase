@@ -3,4 +3,5 @@ require("warper.php");
 
 $cache = warper::get_cfg("cache"); //array("a"=>1)
 
-var_dump($cache);
+$my_log = warper::di("log");
+$my_log->trace("kkk");
