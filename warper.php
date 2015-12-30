@@ -1,4 +1,7 @@
 <?php
+if (!defined("APP_PATH")){
+    define("APP_PATH", dirname(__FILE__));
+}
 
 /**
  * 一个工具类
@@ -7,13 +10,14 @@
  */
 class warper
 {
-    static $cfg = array(); //配置项
+    static $cfg = NULL; //配置项
     static $di = array();  //依赖注入对象
     static $ds = array();  //数据源
 
     protected $name;
 
     /**
+     * init di
      * 初始化一个di
      * @param [type] $name [description]
      */
@@ -34,10 +38,45 @@ class warper
     public function __get($key)
     {
     }
+    /*end di*/
+
+    /**
+     * 格式化配置文件
+     * @param  [type] $var    [description]
+     * @param  string $indent [description]
+     * @return [type]         [description]
+     */
+    public static function var_export54($var, $indent="") {
+        switch (gettype($var)) {
+            case "string":
+                return '"' . addcslashes($var, "\\\$\"\r\n\t\v\f") . '"';
+            case "array":
+                $indexed = array_keys($var) === range(0, count($var) - 1);
+                $r = [];
+                foreach ($var as $key => $value) {
+                    $r[] = "$indent    "
+                         . ($indexed ? "" : self::var_export54($key) . " => ")
+                         . self::var_export54($value, "$indent    ");
+                }
+                return "[\n" . implode(",\n", $r) . "\n" . $indent . "]";
+            case "boolean":
+                return $var ? "TRUE" : "FALSE";
+            default:
+                return var_export($var, TRUE);
+        }
+    }
 
     public static function get_cfg($cfg_key)
     {
-        $file_path = 'config.php';
+        $file_path = APP_PATH . '/config/cfg.inc.php';
+
+        if (NULL === self::$cfg){
+            if (!file_exists($file_path)){
+                throw Exception(sprintf("cfg file %s is not exist", $file_path));
+            }
+
+            self::$cfg = include($file_path);
+        }
 
         if (isset(self::$cfg[$cfg_key])) {
             return self::$cfg[$cfg_key];
@@ -74,9 +113,11 @@ class warper
         }
         self::$cfg[$cfg_key] = $default_val;
 
-        //todo:save config
+        file_put_contents($file_path, "<?php\nreturn " . self::var_export54(self::$cfg) . ";");
+
         return $default_val;
     }
+
 
     /**
      * 依赖注入实现

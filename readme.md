@@ -17,9 +17,11 @@
 
 ### 依赖库分析 Composer 
  - warper::di("smarty")
+ - strstr() 替换formate
 
 ### 脚本
  - php warper check ds  #检查ds是否能正常连接
+ - php warper.php update #更新当前项目
 
 ### 函数初始化辅助
 

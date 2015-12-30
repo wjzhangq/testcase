@@ -1,4 +1,7 @@
 <?php
-return array(
-	'test' => 1,
-);
+return [
+    "cache" => [
+        "a" => 1
+    ],
+    "tt" => "错误"
+];
