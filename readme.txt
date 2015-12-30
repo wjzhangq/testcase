@@ -10,6 +10,8 @@ https://github.com/luofei614/SocketLog
 绝大部分订阅模式只有一个消费者，所有要做精简版本的。
 
 
+### 函数初始化辅助
+
 万能
 打桩
 buf-异步
