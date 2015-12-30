@@ -12,10 +12,11 @@ https://github.com/luofei614/SocketLog
 
 ### 函数初始化辅助
 
-万能
-打桩
-buf-异步
-并行
+### warper
+ - 万能
+ - 打桩
+ - buf-异步
+ - 并行
 
 #### dns 概念
 数据源：
@@ -33,3 +34,9 @@ $loacal_dns = array(
 #### 用法
  - $my_log = warper::di("log"), 返回一个全局log实例。 $my_log->trace("kk");
  - warper::batch(array('callback', param));
+
+
+#### 类型 PType
+ - typeHash 判断类型
+ - toArray 转换为数组
+

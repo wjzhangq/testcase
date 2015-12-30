@@ -2,6 +2,9 @@
 
 /**
  * 定义PHP中Type, like golang
+ * todo: 数组
+ * todo: 匿名类型
+ * todo: 参数检查
  */
 class PType implements ArrayAccess {
 	static $dt = array(); //类型列表
@@ -34,6 +37,7 @@ class PType implements ArrayAccess {
 				}
 
 				//类型转换
+				//todo: 参数转换
 				$v_type = $my_dt[$k];
 				$this->__dict__[$k] = $v;
 			}
@@ -61,6 +65,7 @@ class PType implements ArrayAccess {
 			if ($v instanceof PType){
 				$my_hash ^= $v->hash();
 			}else{
+				//todo:有bug
 				$my_hash ^= crc32($k . '=' . strval($v));
 			}
 		}
