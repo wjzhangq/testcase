@@ -1,22 +1,28 @@
-### 配置管理
- - warper::get_cfg("cache");//"redis://cache.wefit.com"
- - 获取配置，如果配置不存在，自动生成
-
-### socketlog 用法
-https://github.com/luofei614/SocketLog
-
-### 依赖注入
-订阅模式是最通用的模式，但没有rpc直接。
-绝大部分订阅模式只有一个消费者，所有要做精简版本的。
-
-
-### 函数初始化辅助
-
 ### warper
  - 万能
  - 打桩
  - buf-异步
  - 并行
+
+### 配置管理
+ - warper::get_cfg("cache");//"redis://cache.wefit.com"
+ - 获取配置，如果配置不存在，自动生成
+
+### socketlog 用法
+ - https://github.com/luofei614/SocketLog
+
+### 依赖注入
+ - 订阅模式是最通用的模式，但没有rpc直接。
+ - 绝大部分订阅模式只有一个消费者，所有要做精简版本的。
+
+### 依赖库分析 Composer 
+ - warper::di("smarty")
+
+### 脚本
+ - php warper check ds  #检查ds是否能正常连接
+
+### 函数初始化辅助
+
 
 #### dns 概念
 数据源：
