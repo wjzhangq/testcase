@@ -1,5 +1,5 @@
 <?php
-if (!defined("APP_PATH")){
+if (!defined("APP_PATH")) {
     define("APP_PATH", dirname(__FILE__));
 }
 
@@ -44,9 +44,10 @@ class warper
      * 格式化配置文件
      * @param  [type] $var    [description]
      * @param  string $indent [description]
-     * @return [type]         [description]
+     * @return [type] [description]
      */
-    public static function var_export54($var, $indent="") {
+    public static function var_export54($var, $indent="")
+    {
         switch (gettype($var)) {
             case "string":
                 return '"' . addcslashes($var, "\\\$\"\r\n\t\v\f") . '"';
@@ -58,6 +59,7 @@ class warper
                          . ($indexed ? "" : self::var_export54($key) . " => ")
                          . self::var_export54($value, "$indent    ");
                 }
+
                 return "[\n" . implode(",\n", $r) . "\n" . $indent . "]";
             case "boolean":
                 return $var ? "TRUE" : "FALSE";
@@ -70,8 +72,8 @@ class warper
     {
         $file_path = APP_PATH . '/config/cfg.inc.php';
 
-        if (NULL === self::$cfg){
-            if (!file_exists($file_path)){
+        if (NULL === self::$cfg) {
+            if (!file_exists($file_path)) {
                 throw Exception(sprintf("cfg file %s is not exist", $file_path));
             }
 
@@ -118,7 +120,6 @@ class warper
         return $default_val;
     }
 
-
     /**
      * 依赖注入实现
      * @param  [type] $name 模块名称
@@ -151,6 +152,70 @@ class warper
         self::$ds[$sname] = $new_obj;
 
         return $new_obj;
+    }
+
+    /**
+     * web 路由方式
+     *
+     * @return [type] [description]
+     */
+    public static function web()
+    {
+        /*get url path*/
+        $uri = $_SERVER['REQUEST_URI'];
+        $tmp_uri = parse_url($uri);
+        $path = $tmp_uri['path'];
+        /*end get path*/
+
+        $app_path = str_replace('/', '.', trim($path, '/'));
+        $tpl_path = "";
+
+        if ('/' == $path[strlen($path) -1]) {
+            //目录
+            $page_path = APP_PATH . '/page/' . $app_path . '.index.php';
+            $method = 'index';
+        } else {
+            list($file_path, $method) = warper::rexplode('.', $app_path, 2);
+            if (empty($file_path)) {
+                $file_path = APP_PATH . '/page/index.php';
+            } else {
+                $file_path = APP_PATH . '/page/' . $file_path . '.index.php';
+            }
+        }
+
+        var_dump($file_path);
+        var_dump($method);
+
+    }
+
+    public static function rexplode($step, $buf, $num=0)
+    {
+        if ($num == 0) {
+            return explode($step, $buf);
+        }
+
+        $tmp = explode($step, $buf);
+        $tmp_count = count($tmp);
+
+        if ($tmp_count == $num) {
+            return $tmp;
+        }
+
+        if ($tmp_count > $num) {
+            $diff_count = $tmp_count - $num;
+            $ret = array_slice($tmp, -$num);
+            $ret[0] = implode($step, array_slice($tmp, 0, $diff_count+1));
+
+            return $ret;
+        }
+
+        $diff_count = $num - $tmp_count;
+        $ret = array();
+        for ($i=0; $i < $diff_count; $i++) {
+            $ret[] = null;
+        }
+
+        return $ret + $tmp;
     }
 
     /**
