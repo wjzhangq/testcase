@@ -48,3 +48,6 @@ $loacal_dns = array(
  - typeHash 判断类型
  - toArray 转换为数组
 
+#### change composer to china cache
+ - composer config -g repositories.packagist composer http://packagist.phpcomposer.com
+
