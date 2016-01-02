@@ -1,0 +1,26 @@
+{
+    "name": "cola/Warper",
+    "type": "project",
+    "description": "just a project",
+    "license": "MIT",
+    "keywords": ["Warper"],
+    "authors": [
+        {
+            "name": "wjzhangq",
+            "email": "wjzhagq@126.com"
+        }
+    ],
+    "require": {
+        "smarty/smarty": "3.1.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.0.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cola\\Warper\\": "src"
+        }
+    },
+    "scripts":{
+    }
+}

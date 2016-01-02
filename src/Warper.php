@@ -1,7 +1,5 @@
 <?php
-if (!defined("APP_PATH")) {
-    define("APP_PATH", dirname(__FILE__));
-}
+namespace Cola\Warper;
 
 /**
  * 一个工具类

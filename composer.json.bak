@@ -1,0 +1,17 @@
+{
+    "require": {
+        "philipbrown/Nacho": "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "file:///Users/wj/Documents/tmp/nacho"
+        }
+    ],
+    "scripts":{
+        "post-update-cmd": "PhilipBrown\\Nacho\\MyClass::create",
+        "test": [
+            "echo 'fff'"
+        ]
+    }
+}
