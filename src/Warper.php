@@ -165,25 +165,70 @@ class warper
         $path = $tmp_uri['path'];
         /*end get path*/
 
-        $app_path = str_replace('/', '.', trim($path, '/'));
-        $tpl_path = "";
+        $path_is_dir = ('/' == $path[strlen($path) -1]);
+        $path_array = explode("/", trim($path, '/'));
+        $path_count = count($path_array);
 
-        if ('/' == $path[strlen($path) -1]) {
-            //目录
-            $page_path = APP_PATH . '/page/' . $app_path . '.index.php';
-            $method = 'index';
-        } else {
-            list($file_path, $method) = warper::rexplode('.', $app_path, 2);
-            if (empty($file_path)) {
+        //$app_path = str_replace('/', '.', trim($path, '/'));
+
+        /* app file path */
+        if ($path_is_dir){
+            if ("" === $path_array[0]){
                 $file_path = APP_PATH . '/page/index.php';
-            } else {
-                $file_path = APP_PATH . '/page/' . $file_path . '.index.php';
+                $class_name = 'page\\page';
+            }else{
+                $file_path = APP_PATH . '/' . implode(".", $path_array) . '.index.php';
+                $class_name = 'page\\' . implode('\\', $path_array) . '\page';
             }
+            $method = "index";
+        }else{
+            $tmp_path_array = array_slice($path_array, 0, $path_count - 1);
+            $method = $path_array[$path_count -1];
+            $method or $method = 'index';
+            if ($tmp_path_array){
+                $file_path = APP_PATH . '/' . implode('.'. $tmp_path_array) . '.index.php';
+                $class_name = 'page\\' . implode('\\', $tmp_path_array) . '\page'; 
+            }else{
+                $file_path = APP_PATH . '/page/index.php';
+                $class_name = 'page\page';
+            }
+            
         }
 
-        var_dump($file_path);
-        var_dump($method);
+        /* end app file path */
+        if ($path_is_dir){
+            $tpl_path = APP_PATH . '/www/tpl.pc' . $path . 'index.tpl';
+        }else{
+            $tpl_path = APP_PATH . '/www/tpl.pc' . $path . '.tpl';
+        }
+        
+        $data = array();
+        if (file_exists($file_path)){
+            require_once($file_path);
+            if (!class_exists($class_name)){
+                throw new \Exception(sprintf("class %s is not exist!", $class_name), 404);
+            }
+            $my_page = new $class_name();
 
+            if(!method_exists($my_page, $method)){
+                throw new \Exception(sprintf("method %s is not exist!", $method), 404);
+            }
+
+            $data = $my_page->$method();
+        }
+
+        if (file_exists($tpl_path)){
+            $my_view = new \Smarty();
+
+            if ($data){
+                foreach($data as $k=>$v){
+                    $my_view->assign($k, $v);
+                }
+            }
+            $my_view->display($tpl_path);
+        }else{
+            echo json_encode($data);
+        }
     }
 
     public static function rexplode($step, $buf, $num=0)
@@ -212,8 +257,11 @@ class warper
         for ($i=0; $i < $diff_count; $i++) {
             $ret[] = null;
         }
+        foreach($tmp as $v){
+            $ret[] = $v;
+        }
 
-        return $ret + $tmp;
+        return $ret;
     }
 
     /**
