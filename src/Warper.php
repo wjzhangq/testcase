@@ -12,6 +12,7 @@ class Warper
     static $di = array();  //依赖注入对象
     static $di_cfg = NULL;
     static $ds = array();  //数据源
+    static $ds_cfg = NULL;
 
     protected $name;
 
@@ -179,10 +180,79 @@ class Warper
             return self::$ds[$sname];
         }
 
-        $new_obj = new warper($sname);
-        self::$ds[$sname] = $new_obj;
+        $file_path = APP_PATH . '/config/ds.inc.php';
+        if (!is_array(self::$ds_cfg)) {
+            self::$ds_cfg = include($file_path);
+        }
 
-        return $new_obj;
+        if (!isset(self::$ds_cfg[$sname])) {
+            $new_obj  = new warper($sname);
+            self::$ds[$sname] = $new_obj;
+
+            return $new_obj;
+        }
+
+        $my_cfg = self::$ds_cfg[$sname];
+
+        $post_my_cfg = parse_url($my_cfg);
+
+        if (strlen($post_my_cfg['host']) != strcspn($post_my_cfg['host'], '1234567890.')){
+            $post_my_cfg['ip'] = self::get_dns($post_my_cfg['host']);
+        }else{
+            $post_my_cfg['ip'] = $post['host'];
+        }
+
+        isset($post_my_cfg['pass']) and $post_my_cfg['pass'] = urldecode($post_my_cfg['pass']);
+        /*
+        array(8) {
+          ["scheme"]=>
+          string(5) "mysql"
+          ["host"]=>
+          string(15) "db.wefit.com.cn"
+          ["port"]=>
+          int(6379)
+          ["user"]=>
+          string(4) "user"
+          ["pass"]=>
+          string(8) "password"
+          ["path"]=>
+          string(3) "/db"
+          ["query"]=>
+          string(12) "charset=utf8"
+          ["ip"]=>
+          string(9) "127.0.0.1"
+        }*/
+
+
+        var_dump($post_my_cfg);
+        
+    }
+
+    public static function get_dns($hostname){
+        $file_path = APP_PATH . '/config/ds.inc.php';
+        if (!is_array(self::$ds_cfg)) {
+            self::$ds_cfg = include($file_path);
+        }
+
+        if (empty(self::$ds_cfg['dns'][$hostname])){
+
+            return gethostbyname($hostname);
+        }
+
+        $ret = self::$ds_cfg['dns'][$hostname];
+        if (is_string($ret)){
+            return $ret;
+        }
+        if (!is_array($ret)){
+            return NULL;
+        }
+
+        $ret_count = count($ret);
+        if ($ret_count < 2){
+            return $ret[0];
+        }
+
+        return $ret[mt_rand() % $ret_count];
     }
 
     /**

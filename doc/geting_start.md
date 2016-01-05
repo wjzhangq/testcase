@@ -56,11 +56,11 @@
 >/logs/ `网站日志目录`
 ### 开发
 #### 创建目录结构
-
- - `composer create-project warper myapp`
+ - 生成composer.json文件
+ - 生成或者更新目录结构 `composer update`
 
 #### 开启开发模式
- - `composer run dev`
+ - `composer run-script web`
  - `> server start at 0.0.0.0:8080`
 
 #### 创建user/login
