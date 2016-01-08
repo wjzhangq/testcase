@@ -12,7 +12,7 @@ class WarperTest extends PHPUnit_Framework_TestCase
   }
 
   public function testDs(){
-  	$my_api = Cola\Warper\Warper::ds('api');
+  	$my_api = Cola\Warper\Warper::ds('default_db');
 
   	var_dump($my_api);
   }

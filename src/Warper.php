@@ -202,30 +202,46 @@ class Warper
             $post_my_cfg['ip'] = $post['host'];
         }
 
+        /*array(8){["scheme"]=>string(5)"mysql"["host"]=>string(15)"db.wefit.com.cn"["port"]=>int(6379)["user"]=>string(4)"user"["pass"]=>string(8)"password"["path"]=>string(3)"/db"["query"]=>string(12)"charset=utf8"["point"]=>"dbname"["attr"]=>["charset"=>"utf8"]["ip"]=>string(9)"127.0.0.1")}*/
+        isset($post_my_cfg['path']) or $post_my_cfg['path'] = '/';
         isset($post_my_cfg['pass']) and $post_my_cfg['pass'] = urldecode($post_my_cfg['pass']);
-        /*
-        array(8) {
-          ["scheme"]=>
-          string(5) "mysql"
-          ["host"]=>
-          string(15) "db.wefit.com.cn"
-          ["port"]=>
-          int(6379)
-          ["user"]=>
-          string(4) "user"
-          ["pass"]=>
-          string(8) "password"
-          ["path"]=>
-          string(3) "/db"
-          ["query"]=>
-          string(12) "charset=utf8"
-          ["ip"]=>
-          string(9) "127.0.0.1"
-        }*/
+        $post_my_cfg['point'] = trim($post_my_cfg['path'], '/'); //去除/的影响
+        if (!empty($post_my_cfg['query'])){
+            parse_str($post_my_cfg['query'], $my_attr);
+        }else{
+            $my_attr = array();
+        }
+        $post_my_cfg['attr'] = $my_attr;
+
+        $class_name = self::get_ds_class($post_my_cfg['scheme']);
+
+        $new_obj = new $class_name($post_my_cfg);
+        self::$ds[$sname] = $new_obj;
 
 
-        var_dump($post_my_cfg);
+        return $new_obj;
         
+    }
+
+    public static function get_ds_class($scheme){
+        $default_protocol = array(
+            'mysql' => 'Cola\Warper\DsMysql',
+        );
+
+        $file_path = APP_PATH . '/config/ds.inc.php';
+        if (!is_array(self::$ds_cfg)) {
+            self::$ds_cfg = include($file_path);
+        }
+
+        if (!empty(self::$ds_cfg['protocol'][$scheme])){
+            return self::$ds_cfg['protocol'][$scheme];
+        }
+
+        if (isset($default_protocol[$scheme])){
+            return $default_protocol[$scheme];
+        }
+
+        throw Exception(sprintf("protocol %s is unknow", $scheme));
     }
 
     public static function get_dns($hostname){
