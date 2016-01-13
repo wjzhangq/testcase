@@ -350,6 +350,13 @@ class Warper
         }
     }
 
+    /**
+     * 从右边explode函数
+     * @param  [type]  $step [description]
+     * @param  [type]  $buf  [description]
+     * @param  integer $num  [description]
+     * @return [type]        [description]
+     */
     public static function rexplode($step, $buf, $num=0)
     {
         if ($num == 0) {
@@ -384,25 +391,35 @@ class Warper
     }
 
     /**
-     * todo: delete
-     * @param  [type] $dns [description]
-     * @return [type] [description]
+     * 解析class 类
+     * @param  string $class_name class的名称
+     * @return [type]             [description]
      */
-    public function get_datasouce($dns)
-    {
-        $raw = parse_url($dns);
-        $ret = null;
-        switch ($raw['scheme']) {
-            case 'mysql':
-                $my_dns = "mysql:host=".$raw['host'].";dbname=".ltrim($raw['path'], '/').";charset=utf8";
-                $ret = new SimpleMysql($my_dns, $raw['user'], $raw['pass']);
-                break;
+    public static function parse_class($class_name){
+        $method_list = array();
+        $ref = new \ReflectionClass($class_name);
+        $methods = $ref->getMethods();
+        foreach ($methods as $method_ref) {
+            $method = array('name'=>$method_ref->name, 'is_public'=>$method_ref->isPublic(), 'is_static'=>$method_ref->isStatic());
 
-            default:
-                # code...
-                break;
+            //$comment = $method_ref->getDocComment();
+
+
+            $params = $method_ref->getParameters();
+            $param_list = array();
+            foreach($params as $param_ref){
+                if ($param_ref->isOptional()){
+                    $param_list[$param_ref->name] = $param_ref->getDefaultValue();
+                }else{
+                    $param_list[$param_ref->name] = NULL;
+                }
+            }
+            $method['param'] = $param_list;
+
+            $method_list[$method['name']] = $method;
         }
 
-        return $ret;
+        return $method_list;
     }
+
 }
