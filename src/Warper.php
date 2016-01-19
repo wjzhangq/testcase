@@ -272,12 +272,12 @@ class Warper
     }
 
     /**
-     * web 路由方式
-     *
-     * @return [type] [description]
+     * 框架路径解析
+     * @return array array('class_path'=>'', 'class'=>'', 'tpl_path'=>'', 'short_tpl_path'=>'');
      */
-    public static function web()
-    {
+    public static function parse_path(){
+        $ret = array('class_path'=>'', 'class'=>'', 'method'=>'','tpl_path'=>'', 'short_tpl_path'=>'');
+
         /*get url path*/
         $uri = $_SERVER['REQUEST_URI'];
         $tmp_uri = parse_url($uri);
@@ -311,44 +311,25 @@ class Warper
                 $file_path = APP_PATH . '/page/index.php';
                 $class_name = 'page\page';
             }
-
         }
 
         /* end app file path */
         if ($path_is_dir) {
-            $tpl_path = APP_PATH . '/www/tpl.pc' . $path . 'index.tpl';
+            $short_tpl_path = $path . 'index.tpl';
         } else {
-            $tpl_path = APP_PATH . '/www/tpl.pc' . $path . '.tpl';
+            $short_tpl_path =  $path . '.tpl';
         }
 
-        $data = array();
-        if (file_exists($file_path)) {
-            require_once($file_path);
-            if (!class_exists($class_name)) {
-                throw new \Exception(sprintf("class %s is not exist!", $class_name), 404);
-            }
-            $my_page = new $class_name();
+        $ret['class_path'] = $file_path;
+        $ret['class'] = $class_name;
+        $ret['method'] = $method;
+        $ret['short_tpl_path'] = $short_tpl_path;
+        $ret['tpl_path'] = APP_PATH . '/www/tpl.pc' . $short_tpl_path;
 
-            if (!method_exists($my_page, $method)) {
-                throw new \Exception(sprintf("method %s is not exist!", $method), 404);
-            }
-
-            $data = $my_page->$method();
-        }
-
-        if (file_exists($tpl_path)) {
-            $my_view = new \Smarty();
-
-            if ($data) {
-                foreach ($data as $k=>$v) {
-                    $my_view->assign($k, $v);
-                }
-            }
-            $my_view->display($tpl_path);
-        } else {
-            echo json_encode($data);
-        }
+        return $ret;
     }
+
+
 
     /**
      * 从右边explode函数
