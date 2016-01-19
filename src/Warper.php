@@ -294,22 +294,23 @@ class Warper
         if ($path_is_dir) {
             if ("" === $path_array[0]) {
                 $file_path = APP_PATH . '/page/index.php';
-                $class_name = 'page\\page';
+                $class_name = 'index';
             } else {
                 $file_path = APP_PATH . '/' . implode(".", $path_array) . '.index.php';
-                $class_name = 'page\\' . implode('\\', $path_array) . '\page';
+                $class_name =  implode('_', $path_array) . '_index';
             }
             $method = "index";
         } else {
             $tmp_path_array = array_slice($path_array, 0, $path_count - 1);
+
             $method = $path_array[$path_count -1];
             $method or $method = 'index';
             if ($tmp_path_array) {
-                $file_path = APP_PATH . '/' . implode('.'. $tmp_path_array) . '.index.php';
-                $class_name = 'page\\' . implode('\\', $tmp_path_array) . '\page';
+                $file_path = APP_PATH . '/' . implode('.', $tmp_path_array) . '.index.php';
+                $class_name =  implode('_', $tmp_path_array) . '_index';
             } else {
                 $file_path = APP_PATH . '/page/index.php';
-                $class_name = 'page\page';
+                $class_name = 'index';
             }
         }
 
